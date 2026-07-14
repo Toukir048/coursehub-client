@@ -1,25 +1,32 @@
 import Container from "../../components/shared/Container";
-import SectionTitle from "../../components/shared/SectionTitle";
 
 const Home = () => {
   return (
-    <main className="min-h-screen bg-base-200">
-      <section className="flex min-h-screen items-center py-16">
+    <main>
+      <section className="flex min-h-[70vh] items-center bg-primary py-16 text-primary-content">
         <Container>
-          <div className="rounded-3xl bg-base-100 p-8 shadow-sm md:p-12">
-            <SectionTitle
-              title="Build Your Skills with CourseHub"
-              description="Explore practical courses, learn from experienced instructors, and share your own knowledge with the community."
-            />
+          <div className="max-w-3xl">
+            <span className="badge border-secondary bg-secondary px-4 py-3 text-secondary-content">
+              Practical learning platform
+            </span>
 
-            <div className="flex flex-wrap justify-center gap-4">
-              <button className="btn btn-primary">
+            <h1 className="mt-6 text-4xl leading-tight font-bold sm:text-5xl lg:text-6xl">
+              Develop valuable skills with practical online courses
+            </h1>
+
+            <p className="mt-5 max-w-2xl text-base leading-7 text-primary-content/80 md:text-lg">
+              CourseHub connects learners with useful courses in programming,
+              design, business, and career development.
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-4">
+              <a className="btn border-0 bg-neutral text-neutral-content">
                 Explore Courses
-              </button>
+              </a>
 
-              <button className="btn bg-neutral text-neutral-content hover:bg-neutral/90">
+              <a className="btn border-secondary bg-transparent text-secondary hover:bg-secondary hover:text-secondary-content">
                 Learn More
-              </button>
+              </a>
             </div>
           </div>
         </Container>
