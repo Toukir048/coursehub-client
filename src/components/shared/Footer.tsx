@@ -7,7 +7,7 @@ const Footer = () => {
   return (
     <footer className="bg-primary text-primary-content">
       <Container>
-        <div className="grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-8 py-10 sm:grid-cols-2 lg:grid-cols-4 lg:py-12">
           <div>
             <Link to="/" className="flex items-center gap-3">
               <div className="flex size-11 items-center justify-center rounded-xl bg-secondary text-xl font-bold text-secondary-content">

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router";
 import { useAuth } from "../hooks/useAuth";
+import { LoadingState } from "../components/shared/FeedbackState";
 
 interface PrivateRouteProps {
   children: ReactNode;
@@ -11,11 +12,7 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
   const location = useLocation();
 
   if (loading) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <span className="loading loading-spinner loading-lg text-primary" />
-      </div>
-    );
+    return <LoadingState label="Checking your session…" />;
   }
 
   if (!user) {

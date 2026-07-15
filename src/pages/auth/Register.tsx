@@ -77,7 +77,6 @@ const Register = () => {
                 type="text"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
-                placeholder="Enter your full name"
                 className="input input-bordered w-full"
                 required
               />
@@ -92,7 +91,6 @@ const Register = () => {
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="Enter your email"
                 className="input input-bordered w-full"
                 required
               />
@@ -107,7 +105,6 @@ const Register = () => {
                 type="url"
                 value={image}
                 onChange={(event) => setImage(event.target.value)}
-                placeholder="https://example.com/profile.jpg"
                 className="input input-bordered w-full"
               />
             </label>
@@ -121,7 +118,6 @@ const Register = () => {
                 type="password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                placeholder="Minimum 6 characters"
                 className="input input-bordered w-full"
                 minLength={6}
                 required

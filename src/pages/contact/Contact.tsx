@@ -39,9 +39,7 @@ const Contact = () => {
       return;
     }
 
-    setMessage(
-      "Your message has been received. The CourseHub team will contact you soon.",
-    );
+    setMessage("Your message is valid, but this demo form is not connected to a messaging service. Please use the email address shown here.");
 
     form.reset();
   };
@@ -51,7 +49,7 @@ const Contact = () => {
       <Container>
         <SectionTitle
           title="Contact CourseHub"
-          description="Send questions, suggestions, or support requests to the CourseHub team."
+          description="Use the contact details below for questions, suggestions, or support requests."
         />
 
         <div className="grid gap-8 lg:grid-cols-[360px_1fr]">
@@ -113,7 +111,6 @@ const Contact = () => {
                   <input
                     type="text"
                     name="name"
-                    placeholder="Enter your full name"
                     className="input input-bordered w-full"
                     required
                   />
@@ -127,7 +124,6 @@ const Contact = () => {
                   <input
                     type="email"
                     name="email"
-                    placeholder="Enter your email"
                     className="input input-bordered w-full"
                     required
                   />
@@ -142,7 +138,6 @@ const Contact = () => {
                 <input
                   type="text"
                   name="subject"
-                  placeholder="What do you need help with?"
                   className="input input-bordered w-full"
                   required
                 />
@@ -155,14 +150,13 @@ const Contact = () => {
 
                 <textarea
                   name="message"
-                  placeholder="Write your message"
                   className="textarea textarea-bordered min-h-40 w-full"
                   required
                 />
               </label>
 
               <button type="submit" className="btn btn-primary w-full">
-                Send Message
+                Check Message
               </button>
             </form>
           </section>

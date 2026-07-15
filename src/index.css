@@ -29,3 +29,14 @@
   --radius-field: 0.75rem;
   --radius-selector: 0.75rem;
 }
+
+@layer components {
+  :where(.input, .select, .textarea) {
+    @apply border-primary/35 bg-base-100 shadow-sm transition-colors;
+  }
+
+  :where(.input, .select, .textarea):focus,
+  :where(.input, .select, .textarea):focus-within {
+    @apply border-primary outline-2 outline-primary/20;
+  }
+}

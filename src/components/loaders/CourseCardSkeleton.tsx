@@ -1,7 +1,7 @@
 const CourseCardSkeleton = () => {
   return (
-    <div className="h-full overflow-hidden rounded-2xl border border-primary/10 bg-base-100 shadow-sm">
-      <div className="skeleton h-48 w-full rounded-none" />
+    <div className="h-full overflow-hidden rounded-2xl border border-base-300 bg-base-100 shadow-sm" aria-hidden="true">
+      <div className="skeleton aspect-video w-full rounded-none" />
 
       <div className="space-y-4 p-5">
         <div className="flex justify-between">

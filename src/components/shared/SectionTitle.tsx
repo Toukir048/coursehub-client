@@ -1,10 +1,12 @@
 interface SectionTitleProps {
+  eyebrow?: string;
   title: string;
   description?: string;
   align?: "left" | "center";
 }
 
 const SectionTitle = ({
+  eyebrow = "CourseHub",
   title,
   description,
   align = "center",
@@ -13,17 +15,15 @@ const SectionTitle = ({
     align === "center" ? "mx-auto text-center" : "text-left";
 
   return (
-    <div className={`mb-10 max-w-2xl ${alignmentClass}`}>
-      <span className="mb-3 inline-block rounded-full bg-accent px-4 py-1 text-sm font-semibold text-accent-content">
-        CourseHub
-      </span>
+    <div className={`mb-8 max-w-2xl sm:mb-10 ${alignmentClass}`}>
+      <p className="mb-3 text-sm font-semibold uppercase tracking-[0.16em] text-neutral">{eyebrow}</p>
 
-      <h2 className="text-3xl font-bold text-primary md:text-4xl">
+      <h2 className="text-2xl font-bold tracking-tight text-base-content sm:text-3xl">
         {title}
       </h2>
 
       {description && (
-        <p className="mt-3 leading-7 text-primary/70">
+        <p className="mt-3 text-sm leading-relaxed text-base-content/65 sm:text-base">
           {description}
         </p>
       )}

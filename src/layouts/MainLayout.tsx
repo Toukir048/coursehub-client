@@ -4,7 +4,7 @@ import Navbar from "../components/shared/Navbar";
 
 const MainLayout = () => {
   return (
-    <div className="flex min-h-screen flex-col bg-base-200 text-base-content">
+    <div className="flex min-h-screen flex-col bg-base-200/55 text-base-content">
       <Navbar />
 
       <div className="flex-1">

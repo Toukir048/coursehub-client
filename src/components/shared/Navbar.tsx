@@ -49,7 +49,7 @@ const privateNavigationItems: NavigationItem[] = [
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const { user, logout } = useAuth();
+  const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
 
   const navigationItems = user
@@ -132,12 +132,10 @@ const Navbar = () => {
 
           {/* Desktop authentication section */}
           <div className="hidden items-center gap-3 xl:flex">
-            {user ? (
+            {loading ? <div className="skeleton h-10 w-40 bg-primary-content/10" aria-label="Loading account" /> : user ? (
               <>
                 <div className="flex items-center gap-3 rounded-xl bg-primary-content/10 px-3 py-2">
-                  <div className="flex size-9 items-center justify-center rounded-full bg-accent font-bold text-accent-content">
-                    {user.name.charAt(0).toUpperCase()}
-                  </div>
+                  {user.image ? <img src={user.image} alt={`${user.name}'s profile`} className="size-9 rounded-full object-cover" /> : <div className="flex size-9 items-center justify-center rounded-full bg-accent font-bold text-accent-content" aria-hidden="true">{user.name.charAt(0).toUpperCase()}</div>}
 
                   <div className="max-w-32">
                     <p className="truncate text-sm font-semibold text-primary-content">
@@ -188,9 +186,9 @@ const Navbar = () => {
             className="btn btn-square border-primary-content/20 bg-transparent text-primary-content hover:bg-primary-content/10 xl:hidden"
           >
             {isMenuOpen ? (
-              <span className="text-3xl leading-none">×</span>
+              <span className="text-2xl leading-none" aria-hidden="true">×</span>
             ) : (
-              <span className="text-2xl leading-none">☰</span>
+              <span className="text-xl leading-none" aria-hidden="true">☰</span>
             )}
           </button>
         </nav>
@@ -200,9 +198,7 @@ const Navbar = () => {
           <div className="border-t border-primary-content/10 py-4 xl:hidden">
             {user && (
               <div className="mb-4 flex items-center gap-3 rounded-2xl bg-primary-content/10 p-4">
-                <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-accent text-lg font-bold text-accent-content">
-                  {user.name.charAt(0).toUpperCase()}
-                </div>
+                {user.image ? <img src={user.image} alt={`${user.name}'s profile`} className="size-11 shrink-0 rounded-full object-cover" /> : <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-accent text-lg font-bold text-accent-content" aria-hidden="true">{user.name.charAt(0).toUpperCase()}</div>}
 
                 <div className="min-w-0">
                   <p className="truncate font-semibold text-primary-content">

@@ -12,6 +12,9 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const demoEmail = import.meta.env.VITE_DEMO_EMAIL;
+  const demoPassword = import.meta.env.VITE_DEMO_PASSWORD;
+  const hasDemoAccount = Boolean(demoEmail && demoPassword);
 
   const destination =
     (location.state as { from?: string } | null)?.from ?? "/dashboard";
@@ -69,8 +72,7 @@ const Login = () => {
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="Enter your email"
-                className="input input-bordered w-full"
+                className="input input-bordered w-full border-primary/35 bg-base-100 shadow-sm transition-colors focus:border-primary focus:outline-2 focus:outline-primary/20"
                 required
               />
             </label>
@@ -84,8 +86,7 @@ const Login = () => {
                 type="password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                placeholder="Enter your password"
-                className="input input-bordered w-full"
+                className="input input-bordered w-full border-primary/35 bg-base-100 shadow-sm transition-colors focus:border-primary focus:outline-2 focus:outline-primary/20"
                 minLength={6}
                 required
               />
@@ -99,6 +100,20 @@ const Login = () => {
               {isSubmitting && <span className="loading loading-spinner" />}
               {isSubmitting ? "Logging in..." : "Login"}
             </button>
+
+            {hasDemoAccount && (
+              <button
+                type="button"
+                className="btn btn-outline w-full"
+                onClick={() => {
+                  setEmail(demoEmail);
+                  setPassword(demoPassword);
+                  setError("");
+                }}
+              >
+                Use Demo Account
+              </button>
+            )}
           </form>
 
           <p className="mt-6 text-center text-sm text-primary/70">

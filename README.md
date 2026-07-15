@@ -24,7 +24,11 @@ Copy `.env.example` to `.env` and configure:
 
 ```env
 VITE_API_URL=http://localhost:5000/api/v1
+VITE_DEMO_EMAIL=demo@coursehub.test
+VITE_DEMO_PASSWORD=replace-with-demo-password
 ```
+
+The demo variables are optional. When both are configured, the login page shows a **Use Demo Account** button that fills the form without submitting it. The deployment owner must first create the matching demo user in MongoDB (for example with the backend seed script) and must keep the actual password in deployment environment settings, not source control.
 
 ## Local installation
 
@@ -53,12 +57,6 @@ Live frontend: `YOUR_FRONTEND_LIVE_URL`
 ## Deployment
 
 Set `VITE_API_URL` to the deployed API base URL and run `npm run build`. The included `netlify.toml` publishes `dist` and rewrites SPA routes to `index.html`.
-
-## Screenshots
-
-- Home: `ADD_HOME_SCREENSHOT`
-- Courses: `ADD_COURSES_SCREENSHOT`
-- Dashboard: `ADD_DASHBOARD_SCREENSHOT`
 
 ## Author
 
