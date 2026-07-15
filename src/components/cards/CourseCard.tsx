@@ -11,6 +11,10 @@ const CourseCard = ({ course }: CourseCardProps) => {
       <img
         src={course.image || "https://placehold.co/800x450?text=CourseHub"}
         alt={course.title}
+        onError={(event) => {
+          event.currentTarget.onerror = null;
+          event.currentTarget.src = "https://placehold.co/800x450?text=CourseHub";
+        }}
         className="h-48 w-full object-cover"
       />
 

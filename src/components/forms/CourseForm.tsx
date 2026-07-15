@@ -15,7 +15,7 @@ const CourseForm = ({ course, submitLabel, submitting, error, onSubmit }: Props)
     <div className="grid gap-5 sm:grid-cols-2"><label><span className="label-text font-semibold">Price</span><input type="number" min="0" value={values.price} onChange={(e) => set("price", e.target.value)} className="input input-bordered mt-2 w-full" required /></label><label><span className="label-text font-semibold">Duration</span><input value={values.duration} onChange={(e) => set("duration", e.target.value)} className="input input-bordered mt-2 w-full" required /></label></div>
     <label className="block"><span className="label-text font-semibold">Image URL</span><input type="url" value={values.image} onChange={(e) => set("image", e.target.value)} className="input input-bordered mt-2 w-full" required /></label>
     {[{key:"additionalImages", label:"Additional image URLs"},{key:"learningOutcomes", label:"Learning outcomes"},{key:"requirements", label:"Requirements"}].map(({key,label}) => <label key={key} className="block"><span className="label-text font-semibold">{label}</span><textarea value={values[key as keyof typeof values]} onChange={(e) => set(key as keyof typeof values, e.target.value)} className="textarea textarea-bordered mt-2 min-h-28 w-full" placeholder="One value per line" /></label>)}
-    <button disabled={submitting} className="btn btn-primary w-full">{submitting && <span className="loading loading-spinner" />}{submitLabel}</button>
+    <button type="submit" disabled={submitting} className="btn btn-primary w-full">{submitting && <span className="loading loading-spinner" />}{submitLabel}</button>
   </form>;
 };
 export default CourseForm;

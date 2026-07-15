@@ -30,7 +30,15 @@ const Courses = () => {
       setLoading(true); setError("");
       try {
         const response = await getCourses({ search: debouncedSearch || undefined, category: category || undefined, maxPrice: maxPrice ? Number(maxPrice) : undefined, minimumRating: minimumRating ? Number(minimumRating) : undefined, sort, page, limit: 8 });
-        if (active) { setCourses(response.data.courses); setPagination(response.data.pagination); }
+        if (active) {
+          const nextPagination = response.data.pagination;
+          if (nextPagination.totalPages > 0 && page > nextPagination.totalPages) {
+            setPage(nextPagination.totalPages);
+            return;
+          }
+          setCourses(response.data.courses);
+          setPagination(nextPagination);
+        }
       } catch (requestError) { if (active) setError(getApiErrorMessage(requestError, "Unable to load courses.")); }
       finally { if (active) setLoading(false); }
     };

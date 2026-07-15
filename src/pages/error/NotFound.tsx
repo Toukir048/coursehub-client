@@ -14,12 +14,14 @@ const NotFound = () => {
             The page you requested does not exist or may have been moved.
           </p>
 
-          <Link
-            to="/"
-            className="btn mt-8 border-0 bg-neutral text-neutral-content"
-          >
-            Return Home
-          </Link>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Link to="/" className="btn border-0 bg-neutral text-neutral-content">
+              Return Home
+            </Link>
+            <Link to="/courses" className="btn border-secondary bg-transparent text-secondary hover:bg-secondary hover:text-secondary-content">
+              Browse Courses
+            </Link>
+          </div>
         </div>
       </Container>
     </main>
