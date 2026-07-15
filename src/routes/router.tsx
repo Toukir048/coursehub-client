@@ -8,6 +8,9 @@ import Contact from "../pages/contact/Contact";
 import Courses from "../pages/courses/Courses";
 import NotFound from "../pages/error/NotFound";
 import Home from "../pages/home/Home";
+import CourseDetails from "../pages/courses/CourseDetails";
+import Privacy from "../pages/Privacy";
+import Terms from "../pages/Terms";
 
 export const router = createBrowserRouter([
   {
@@ -41,6 +44,18 @@ export const router = createBrowserRouter([
       {
         path: "register",
         Component: Register,
+      },
+      {
+        path: "courses/:id",
+        Component: CourseDetails,
+      },
+      {
+        path: "privacy",
+        Component: Privacy,
+      },
+      {
+        path: "terms",
+        Component: Terms,
       },
     ],
   },
