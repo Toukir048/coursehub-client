@@ -41,6 +41,12 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     void restoreSession();
   }, []);
 
+  useEffect(() => {
+    const clearExpiredSession = () => setUser(null);
+    window.addEventListener("coursehub-auth-expired", clearExpiredSession);
+    return () => window.removeEventListener("coursehub-auth-expired", clearExpiredSession);
+  }, []);
+
   const login = async (payload: LoginPayload) => {
     try {
       const response = await authService.login(payload);

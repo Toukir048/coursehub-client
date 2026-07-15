@@ -1,8 +1,9 @@
-import type { FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Link } from "react-router";
 import Container from "../../components/shared/Container";
 import SectionTitle from "../../components/shared/SectionTitle";
-import { courses } from "../../data/courses.data";
+import { getCourses } from "../../services/course.service";
+import type { Course } from "../../types/course.types";
 import {
   blogPosts,
   categories,
@@ -11,7 +12,17 @@ import {
 } from "../../data/home.data";
 
 const Home = () => {
-  const featuredCourses = courses.slice(0, 4);
+  const [featuredCourses, setFeaturedCourses] = useState<Course[]>([]);
+  const [coursesLoading, setCoursesLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    getCourses({ sort: "rating", limit: 4 })
+      .then((response) => { if (active) setFeaturedCourses(response.data.courses); })
+      .catch(() => { if (active) setFeaturedCourses([]); })
+      .finally(() => { if (active) setCoursesLoading(false); });
+    return () => { active = false; };
+  }, []);
 
   const handleNewsletterSubmit = (
     event: FormEvent<HTMLFormElement>,
@@ -143,7 +154,7 @@ const Home = () => {
             description="Explore popular courses designed around practical and career-focused skills."
           />
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {coursesLoading ? <div className="flex justify-center"><span className="loading loading-spinner loading-lg" /></div> : featuredCourses.length ? <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {featuredCourses.map((course) => (
               <article
                 key={course._id}
@@ -199,7 +210,7 @@ const Home = () => {
                 </div>
               </article>
             ))}
-          </div>
+          </div> : <div className="rounded-2xl bg-base-200 p-8 text-center">No featured courses are available yet.</div>}
 
           <div className="mt-10 text-center">
             <Link

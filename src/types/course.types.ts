@@ -1,10 +1,5 @@
-export interface CourseReview {
-  id: number;
-  userName: string;
-  rating: number;
-  comment: string;
-  date: string;
-}
+export type CourseLevel = "Beginner" | "Intermediate" | "Advanced";
+export type CourseSortOption = "newest" | "price-low" | "price-high" | "rating";
 
 export interface Course {
   _id: string;
@@ -12,7 +7,7 @@ export interface Course {
   shortDescription: string;
   fullDescription: string;
   category: string;
-  level: "Beginner" | "Intermediate" | "Advanced";
+  level: CourseLevel;
   price: number;
   rating: number;
   duration: string;
@@ -21,8 +16,18 @@ export interface Course {
   instructorName: string;
   totalStudents: number;
   createdBy: string;
-  createdAt: string;
   learningOutcomes: string[];
   requirements: string[];
-  reviews: CourseReview[];
+  createdAt: string;
+  updatedAt: string;
 }
+
+export type CreateCoursePayload = Pick<Course, "title" | "shortDescription" | "fullDescription" | "category" | "level" | "price" | "duration" | "image" | "additionalImages" | "learningOutcomes" | "requirements">;
+export type UpdateCoursePayload = Partial<CreateCoursePayload>;
+
+export interface CoursePagination { page: number; limit: number; totalItems: number; totalPages: number; }
+export interface CourseListResponse { success: boolean; message: string; data: { courses: Course[]; pagination: CoursePagination }; }
+export interface CourseDetailsResponse { success: boolean; message: string; data: { course: Course }; }
+export interface MyCoursesResponse { success: boolean; message: string; data: { courses: Course[] }; }
+export interface CourseMutationResponse { success: boolean; message: string; data: { course: Course } | null; }
+export interface CourseQuery { search?: string; category?: string; maxPrice?: number; minimumRating?: number; sort?: CourseSortOption; page?: number; limit?: number; }

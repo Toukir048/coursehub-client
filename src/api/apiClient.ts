@@ -20,4 +20,15 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error: unknown) => {
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      localStorage.removeItem(ACCESS_TOKEN_KEY);
+      window.dispatchEvent(new Event("coursehub-auth-expired"));
+    }
+    return Promise.reject(error);
+  },
+);
+
 export default apiClient;

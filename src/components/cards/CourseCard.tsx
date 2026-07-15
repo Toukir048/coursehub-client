@@ -9,7 +9,7 @@ const CourseCard = ({ course }: CourseCardProps) => {
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-primary/10 bg-base-100 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
       <img
-        src={course.image}
+        src={course.image || "https://placehold.co/800x450?text=CourseHub"}
         alt={course.title}
         className="h-48 w-full object-cover"
       />
@@ -32,6 +32,7 @@ const CourseCard = ({ course }: CourseCardProps) => {
         <p className="mt-3 line-clamp-3 flex-1 leading-6 text-primary/70">
           {course.shortDescription}
         </p>
+        <p className="mt-3 text-sm text-primary/60">{course.level} · {course.instructorName}</p>
 
         <div className="mt-5 grid grid-cols-2 gap-3 border-t border-primary/10 pt-4 text-sm">
           <div>

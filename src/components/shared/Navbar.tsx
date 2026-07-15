@@ -38,11 +38,11 @@ const privateNavigationItems: NavigationItem[] = [
   },
   {
     name: "Add Course",
-    path: "/items/add",
+    path: "/add-course",
   },
   {
     name: "Manage Courses",
-    path: "/items/manage",
+    path: "/manage-courses",
   },
 ];
 

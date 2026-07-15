@@ -15,6 +15,7 @@ import AddCourse from "../pages/courses/AddCourse";
 import ManageCourses from "../pages/courses/ManageCourses";
 import PrivateRoute from "./PrivateRoute";
 import Dashboard from "../pages/dashboard/Dashboard";
+import EditCourse from "../pages/courses/EditCourse";
 
 export const router = createBrowserRouter([
   {
@@ -50,7 +51,7 @@ export const router = createBrowserRouter([
         Component: Register,
       },
       {
-        path: "courses/:id",
+        path: "courses/:courseId",
         Component: CourseDetails,
       },
       {
@@ -70,12 +71,24 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: "add-course",
+        element: <PrivateRoute><AddCourse /></PrivateRoute>,
+      },
+      {
         path: "items/manage",
         element: (
           <PrivateRoute>
             <ManageCourses />
           </PrivateRoute>
         ),
+      },
+      {
+        path: "manage-courses",
+        element: <PrivateRoute><ManageCourses /></PrivateRoute>,
+      },
+      {
+        path: "courses/:courseId/edit",
+        element: <PrivateRoute><EditCourse /></PrivateRoute>,
       },
       {
         path: "dashboard",
