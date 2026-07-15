@@ -7,10 +7,10 @@ interface PrivateRouteProps {
 }
 
 const PrivateRoute = ({ children }: PrivateRouteProps) => {
-  const { user, isLoading } = useAuth();
+  const { user, loading } = useAuth();
   const location = useLocation();
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <span className="loading loading-spinner loading-lg text-primary" />

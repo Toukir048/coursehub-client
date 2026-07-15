@@ -1,26 +1,12 @@
 import { createContext } from "react";
-import type { User } from "../types/user.types";
-
-export interface LoginData {
-  email: string;
-  password: string;
-}
-
-export interface RegisterData {
-  name: string;
-  email: string;
-  password: string;
-}
+import type { AuthUser, LoginPayload, RegisterPayload } from "../types/auth";
 
 export interface AuthContextType {
-  user: User | null;
-  isLoading: boolean;
-  login: (data: LoginData) => boolean;
-  register: (data: RegisterData) => boolean;
-  demoLogin: () => void;
+  user: AuthUser | null;
+  loading: boolean;
+  login: (payload: LoginPayload) => Promise<void>;
+  register: (payload: RegisterPayload) => Promise<void>;
   logout: () => void;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined,
-);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);

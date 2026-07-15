@@ -8,20 +8,15 @@ const Register = () => {
   const navigate = useNavigate();
 
   const [error, setError] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [image, setImage] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
-
-    const form = event.currentTarget;
-    const formData = new FormData(form);
-
-    const name = String(formData.get("name"));
-    const email = String(formData.get("email"));
-    const password = String(formData.get("password"));
-    const confirmPassword = String(
-      formData.get("confirmPassword"),
-    );
 
     if (name.trim().length < 3) {
       setError("Name must contain at least 3 characters.");
@@ -33,13 +28,19 @@ const Register = () => {
       return;
     }
 
-    if (password !== confirmPassword) {
-      setError("Password and confirm password do not match.");
-      return;
+    setIsSubmitting(true);
+    try {
+      await register({ name: name.trim(), email, password, image: image.trim() });
+      navigate("/dashboard", { replace: true });
+    } catch (submitError) {
+      setError(
+        submitError instanceof Error
+          ? submitError.message
+          : "Unable to register. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
     }
-
-    register({ name, email, password });
-    navigate("/");
   };
 
   return (
@@ -74,7 +75,8 @@ const Register = () => {
 
               <input
                 type="text"
-                name="name"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
                 placeholder="Enter your full name"
                 className="input input-bordered w-full"
                 required
@@ -88,10 +90,25 @@ const Register = () => {
 
               <input
                 type="email"
-                name="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
                 placeholder="Enter your email"
                 className="input input-bordered w-full"
                 required
+              />
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block font-medium text-primary">
+                Image URL <span className="font-normal text-primary/60">(optional)</span>
+              </span>
+
+              <input
+                type="url"
+                value={image}
+                onChange={(event) => setImage(event.target.value)}
+                placeholder="https://example.com/profile.jpg"
+                className="input input-bordered w-full"
               />
             </label>
 
@@ -102,7 +119,8 @@ const Register = () => {
 
               <input
                 type="password"
-                name="password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
                 placeholder="Minimum 6 characters"
                 className="input input-bordered w-full"
                 minLength={6}
@@ -110,23 +128,13 @@ const Register = () => {
               />
             </label>
 
-            <label className="block">
-              <span className="mb-2 block font-medium text-primary">
-                Confirm password
-              </span>
-
-              <input
-                type="password"
-                name="confirmPassword"
-                placeholder="Enter password again"
-                className="input input-bordered w-full"
-                minLength={6}
-                required
-              />
-            </label>
-
-            <button type="submit" className="btn btn-primary w-full">
-              Create Account
+            <button
+              type="submit"
+              className="btn btn-primary w-full"
+              disabled={isSubmitting}
+            >
+              {isSubmitting && <span className="loading loading-spinner" />}
+              {isSubmitting ? "Creating account..." : "Create Account"}
             </button>
           </form>
 

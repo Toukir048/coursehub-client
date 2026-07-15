@@ -4,36 +4,35 @@ import Container from "../../components/shared/Container";
 import { useAuth } from "../../hooks/useAuth";
 
 const Login = () => {
-  const { login, demoLogin } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const destination =
-    (location.state as { from?: string } | null)?.from ?? "/";
+    (location.state as { from?: string } | null)?.from ?? "/dashboard";
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
 
-    const success = login({ email, password });
-
-    if (!success) {
-      setError("Email or password is incorrect.");
-      return;
+    setIsSubmitting(true);
+    try {
+      await login({ email, password });
+      navigate(destination, { replace: true });
+    } catch (submitError) {
+      setError(
+        submitError instanceof Error
+          ? submitError.message
+          : "Unable to log in. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
     }
-
-    navigate(destination, { replace: true });
-  };
-
-  const handleDemoLogin = () => {
-    setEmail("user@coursehub.com");
-    setPassword("User123");
-    demoLogin();
-    navigate(destination, { replace: true });
   };
 
   return (
@@ -92,27 +91,15 @@ const Login = () => {
               />
             </label>
 
-            <button type="submit" className="btn btn-primary w-full">
-              Login
-            </button>
-
             <button
-              type="button"
-              onClick={handleDemoLogin}
-              className="btn w-full border-neutral bg-transparent text-neutral hover:bg-neutral hover:text-neutral-content"
+              type="submit"
+              className="btn btn-primary w-full"
+              disabled={isSubmitting}
             >
-              Demo Login
+              {isSubmitting && <span className="loading loading-spinner" />}
+              {isSubmitting ? "Logging in..." : "Login"}
             </button>
           </form>
-
-          <div className="mt-5 rounded-xl bg-base-200 p-4 text-sm">
-            <p>
-              <strong>Email:</strong> user@coursehub.com
-            </p>
-            <p className="mt-1">
-              <strong>Password:</strong> User123
-            </p>
-          </div>
 
           <p className="mt-6 text-center text-sm text-primary/70">
             Do not have an account?{" "}
