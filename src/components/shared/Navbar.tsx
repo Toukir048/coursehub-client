@@ -33,6 +33,10 @@ const publicNavigationItems: NavigationItem[] = [
 
 const privateNavigationItems: NavigationItem[] = [
   {
+    name: "Dashboard",
+    path: "/dashboard",
+  },
+  {
     name: "Add Course",
     path: "/items/add",
   },

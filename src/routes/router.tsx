@@ -14,6 +14,7 @@ import Terms from "../pages/Terms";
 import AddCourse from "../pages/courses/AddCourse";
 import ManageCourses from "../pages/courses/ManageCourses";
 import PrivateRoute from "./PrivateRoute";
+import Dashboard from "../pages/dashboard/Dashboard";
 
 export const router = createBrowserRouter([
   {
@@ -73,6 +74,14 @@ export const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <ManageCourses />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "dashboard",
+        element: (
+          <PrivateRoute>
+            <Dashboard />
           </PrivateRoute>
         ),
       },
