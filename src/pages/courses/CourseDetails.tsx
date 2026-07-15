@@ -2,37 +2,664 @@ import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router";
 import CourseCard from "../../components/cards/CourseCard";
 import Container from "../../components/shared/Container";
-import { EmptyState, ErrorState, LoadingState } from "../../components/shared/FeedbackState";
+import {
+  EmptyState,
+  ErrorState,
+  LoadingState,
+} from "../../components/shared/FeedbackState";
 import FormField from "../../components/shared/FormField";
 import { useAuth } from "../../hooks/useAuth";
-import { getCourseById, getCourses } from "../../services/course.service";
-import { createReview, getCourseReviews } from "../../services/review.service";
+import {
+  getCourseById,
+  getCourses,
+} from "../../services/course.service";
+import {
+  createReview,
+  getCourseReviews,
+} from "../../services/review.service";
 import type { Course } from "../../types/course.types";
 import type { Review } from "../../types/review";
 import { getApiErrorMessage } from "../../utils/getApiErrorMessage";
 
-const fallbackImage = "https://placehold.co/1200x675/e1d3b6/11365b?text=CourseHub";
+const fallbackImage =
+  "https://placehold.co/1200x675/e1d3b6/11365b?text=CourseHub";
 
 const CourseDetails = () => {
-  const { courseId } = useParams(); const { user } = useAuth(); const [course, setCourse] = useState<Course | null>(null); const [reviews, setReviews] = useState<Review[]>([]); const [loading, setLoading] = useState(true); const [error, setError] = useState(""); const [reviewError, setReviewError] = useState(""); const [reviewSuccess, setReviewSuccess] = useState(""); const [rating, setRating] = useState(5); const [comment, setComment] = useState(""); const [submitting, setSubmitting] = useState(false);
+  const { courseId } = useParams();
+  const { user } = useAuth();
+
+  const [course, setCourse] = useState<Course | null>(null);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [relatedCourses, setRelatedCourses] = useState<Course[]>([]);
-  const loadReviews = useCallback(async () => { if (!courseId) return; const response = await getCourseReviews(courseId); setReviews(response.data.reviews); }, [courseId]);
-  const loadCourse = useCallback(async () => { if (!courseId) return; try { const [courseResponse, reviewResponse] = await Promise.all([getCourseById(courseId), getCourseReviews(courseId)]); setCourse(courseResponse.data.course); setReviews(reviewResponse.data.reviews); } catch (requestError) { setError(getApiErrorMessage(requestError, "Unable to load this course.")); } finally { setLoading(false); } }, [courseId]);
-  useEffect(() => { if (!courseId) return; let active = true; Promise.all([getCourseById(courseId), getCourseReviews(courseId)]).then(([courseResponse, reviewResponse]) => { if (active) { setCourse(courseResponse.data.course); setReviews(reviewResponse.data.reviews); } }).catch((requestError: unknown) => { if (active) setError(getApiErrorMessage(requestError, "Unable to load this course.")); }).finally(() => { if (active) setLoading(false); }); return () => { active = false; }; }, [courseId]);
-  useEffect(() => { if (!course) return; let active = true; getCourses({ category: course.category, limit: 5 }).then((response) => { if (active) setRelatedCourses(response.data.courses.filter((item) => item._id !== course._id).slice(0, 4)); }).catch(() => { if (active) setRelatedCourses([]); }); return () => { active = false; }; }, [course]);
-  const submitReview = async (event: FormEvent) => { event.preventDefault(); if (!courseId || !comment.trim()) return; setSubmitting(true); setReviewError(""); setReviewSuccess(""); try { await createReview({ courseId, rating, comment: comment.trim() }); setComment(""); setRating(5); await loadReviews(); setReviewSuccess("Your review was published."); } catch (requestError) { setReviewError(getApiErrorMessage(requestError, "Unable to add review.")); } finally { setSubmitting(false); } };
-  if (loading) return <LoadingState label="Loading course details…" />;
-  if (error || !course) return <main className="py-12"><Container><ErrorState title="Course unavailable" description={error || "The requested course could not be found."} action={<div className="flex justify-center gap-3"><button type="button" onClick={() => void loadCourse()} className="btn btn-outline">Retry</button><Link to="/courses" className="btn btn-primary">Browse Courses</Link></div>} /></Container></main>;
-  return <main><section className="bg-primary py-10 text-primary-content sm:py-12 lg:py-14"><Container><Link to="/courses" className="text-sm text-primary-content/65 transition-colors hover:text-primary-content">← Back to courses</Link><div className="mt-6 grid items-center gap-8 lg:grid-cols-[1.05fr_.95fr]"><div><div className="flex flex-wrap gap-2"><span className="badge badge-secondary">{course.category}</span><span className="badge border-primary-content/30 bg-transparent text-primary-content">{course.level}</span></div><h1 className="mt-5 text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">{course.title}</h1><p className="mt-4 max-w-2xl text-base leading-relaxed text-primary-content/75 sm:text-lg">{course.shortDescription}</p><div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-primary-content/70"><span className="font-semibold text-secondary">★ {course.rating || "Not rated"}</span><span>{reviews.length} {reviews.length === 1 ? "review" : "reviews"}</span><span>{course.duration}</span><span>{course.totalStudents} learners</span></div><p className="mt-5 text-sm text-primary-content/65">Created by <strong className="text-primary-content">{course.instructorName}</strong></p></div><img src={course.image || fallbackImage} onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = fallbackImage; }} alt={course.title} className="aspect-video w-full rounded-2xl object-cover shadow-lg" /></div></Container></section>
-    <section className="py-10 sm:py-12 lg:py-16"><Container><div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] xl:grid-cols-[minmax(0,1fr)_360px]"><div className="min-w-0 space-y-6">
-      <article className="rounded-2xl border border-base-300 bg-base-100 p-6 shadow-sm sm:p-8"><h2 className="text-2xl font-bold">Course overview</h2><p className="mt-4 whitespace-pre-line leading-relaxed text-base-content/70">{course.fullDescription}</p></article>
-      <div className="grid gap-6 md:grid-cols-2"><article className="rounded-2xl border border-base-300 bg-base-100 p-6 shadow-sm"><h2 className="text-xl font-semibold">What you will learn</h2>{course.learningOutcomes.length ? <ul className="mt-5 space-y-3">{course.learningOutcomes.map((item) => <li key={item} className="flex gap-3 text-sm leading-relaxed text-base-content/70"><span className="font-bold text-primary" aria-hidden="true">✓</span>{item}</li>)}</ul> : <p className="mt-4 text-sm text-base-content/55">No learning outcomes provided.</p>}</article><article className="rounded-2xl border border-base-300 bg-base-100 p-6 shadow-sm"><h2 className="text-xl font-semibold">Requirements</h2>{course.requirements.length ? <ul className="mt-5 space-y-3">{course.requirements.map((item) => <li key={item} className="flex gap-3 text-sm leading-relaxed text-base-content/70"><span className="font-bold text-neutral" aria-hidden="true">•</span>{item}</li>)}</ul> : <p className="mt-4 text-sm text-base-content/55">No requirements provided.</p>}</article></div>
-      {course.additionalImages.length > 0 && <article className="rounded-2xl border border-base-300 bg-base-100 p-6 shadow-sm sm:p-8"><h2 className="text-2xl font-bold">Course gallery</h2><div className="mt-5 grid gap-4 sm:grid-cols-2">{course.additionalImages.map((image, index) => <img key={`${image}-${index}`} src={image} alt={`${course.title} preview ${index + 1}`} className="aspect-video w-full rounded-xl object-cover" />)}</div></article>}
-      <article className="rounded-2xl border border-base-300 bg-base-100 p-6 shadow-sm sm:p-8"><div className="flex flex-wrap items-end justify-between gap-3"><div><h2 className="text-2xl font-bold">Reviews</h2><p className="mt-1 text-sm text-base-content/55">Feedback from CourseHub learners.</p></div><span className="font-semibold text-neutral">★ {course.rating || "New"}</span></div>{reviews.length ? <div className="mt-6 space-y-4">{reviews.map((review) => <article key={review._id} className="rounded-xl bg-base-200/70 p-5"><div className="flex items-center gap-3">{review.userImage ? <img src={review.userImage} alt={`${review.userName}'s profile`} className="size-10 rounded-full object-cover" /> : <span className="flex size-10 items-center justify-center rounded-full bg-primary font-semibold text-primary-content" aria-hidden="true">{review.userName.charAt(0).toUpperCase()}</span>}<div className="min-w-0"><h3 className="truncate font-semibold">{review.userName}</h3><time className="text-xs text-base-content/50" dateTime={review.createdAt}>{new Date(review.createdAt).toLocaleDateString()}</time></div><span className="ml-auto text-sm font-semibold text-neutral">★ {review.rating}</span></div><p className="mt-4 text-sm leading-relaxed text-base-content/70">{review.comment}</p></article>)}</div> : <div className="mt-6"><EmptyState title="No reviews yet" description="Be the first learner to share an experience." compact /></div>}
-        {user ? <form onSubmit={submitReview} className="mt-8 space-y-4 border-t border-base-300 pt-6"><h3 className="text-xl font-semibold">Write a review</h3>{reviewError && <div className="alert alert-error" role="alert"><span>{reviewError}</span></div>}{reviewSuccess && <div className="alert alert-success" role="status"><span>{reviewSuccess}</span></div>}<FormField label="Rating" required><select value={rating} onChange={(event) => setRating(Number(event.target.value))} className="select select-bordered w-full sm:max-w-xs">{[5, 4, 3, 2, 1].map((value) => <option key={value} value={value}>{value} stars</option>)}</select></FormField><FormField label="Your review" required><textarea value={comment} onChange={(event) => setComment(event.target.value)} className="textarea textarea-bordered min-h-28 w-full" required minLength={3} /></FormField><button type="submit" disabled={submitting} className="btn btn-primary min-w-40">{submitting && <span className="loading loading-spinner loading-sm" />}Submit Review</button></form> : <div className="mt-8 border-t border-base-300 pt-6"><p className="text-sm text-base-content/65"><Link to="/login" state={{ from: `/courses/${courseId}` }} className="font-semibold text-primary hover:underline">Log in</Link> to share your experience.</p></div>}
-      </article>
-    </div><aside className="h-fit rounded-2xl border border-base-300 bg-base-100 p-6 shadow-sm lg:sticky lg:top-24"><p className="text-sm text-base-content/55">Course price</p><p className="mt-1 text-4xl font-bold tracking-tight text-primary">৳{course.price.toLocaleString()}</p><dl className="mt-6 space-y-4 border-y border-base-300 py-5 text-sm"><div className="flex justify-between gap-4"><dt className="text-base-content/55">Level</dt><dd className="font-semibold">{course.level}</dd></div><div className="flex justify-between gap-4"><dt className="text-base-content/55">Duration</dt><dd className="font-semibold">{course.duration}</dd></div><div className="flex justify-between gap-4"><dt className="text-base-content/55">Category</dt><dd className="max-w-40 text-right font-semibold">{course.category}</dd></div></dl><Link to="/courses" className="btn btn-primary mt-6 w-full">Explore More Courses</Link></aside></div></Container></section>
-    {relatedCourses.length > 0 && <section className="border-t border-base-300 bg-base-100 py-10 sm:py-12 lg:py-16"><Container><div className="flex flex-wrap items-end justify-between gap-4"><div><p className="text-sm font-semibold uppercase tracking-[0.16em] text-neutral">Keep exploring</p><h2 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">Related courses</h2></div><Link to={`/courses?category=${encodeURIComponent(course.category)}`} className="btn btn-outline">View Category</Link></div><div className="mt-7 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">{relatedCourses.map((item) => <CourseCard key={item._id} course={item} />)}</div></Container></section>}
-  </main>;
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const [reviewError, setReviewError] = useState("");
+  const [reviewSuccess, setReviewSuccess] = useState("");
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const loadReviews = useCallback(async () => {
+    if (!courseId) {
+      return;
+    }
+
+    const response = await getCourseReviews(courseId);
+    setReviews(response.data.reviews);
+  }, [courseId]);
+
+  const fetchCourseData = useCallback(async () => {
+    if (!courseId) {
+      throw new Error("Invalid course ID.");
+    }
+
+    const [courseResponse, reviewResponse] = await Promise.all([
+      getCourseById(courseId),
+      getCourseReviews(courseId),
+    ]);
+
+    return {
+      course: courseResponse.data.course,
+      reviews: reviewResponse.data.reviews,
+    };
+  }, [courseId]);
+
+  const loadCourse = useCallback(async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const data = await fetchCourseData();
+      setCourse(data.course);
+      setReviews(data.reviews);
+    } catch (requestError) {
+      setError(
+        getApiErrorMessage(
+          requestError,
+          "Unable to load this course.",
+        ),
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchCourseData]);
+
+  useEffect(() => {
+    let active = true;
+
+    fetchCourseData()
+      .then((data) => {
+        if (!active) {
+          return;
+        }
+
+        setCourse(data.course);
+        setReviews(data.reviews);
+      })
+      .catch((requestError: unknown) => {
+        if (!active) {
+          return;
+        }
+
+        setError(
+          getApiErrorMessage(
+            requestError,
+            "Unable to load this course.",
+          ),
+        );
+      })
+      .finally(() => {
+        if (active) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [fetchCourseData]);
+
+  useEffect(() => {
+    if (!course) {
+      return;
+    }
+
+    let active = true;
+
+    getCourses({
+      category: course.category,
+      limit: 5,
+    })
+      .then((response) => {
+        if (!active) {
+          return;
+        }
+
+        setRelatedCourses(
+          response.data.courses
+            .filter((item) => item._id !== course._id)
+            .slice(0, 4),
+        );
+      })
+      .catch(() => {
+        if (active) {
+          setRelatedCourses([]);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [course]);
+
+  const submitReview = async (
+    event: FormEvent<HTMLFormElement>,
+  ) => {
+    event.preventDefault();
+
+    if (!courseId || !comment.trim()) {
+      return;
+    }
+
+    setSubmitting(true);
+    setReviewError("");
+    setReviewSuccess("");
+
+    try {
+      await createReview({
+        courseId,
+        rating,
+        comment: comment.trim(),
+      });
+
+      setComment("");
+      setRating(5);
+
+      await Promise.all([loadReviews(), loadCourse()]);
+
+      setReviewSuccess("Your review was published.");
+    } catch (requestError) {
+      setReviewError(
+        getApiErrorMessage(
+          requestError,
+          "Unable to add review.",
+        ),
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (loading) {
+    return <LoadingState label="Loading course details…" />;
+  }
+
+  if (error || !course) {
+    return (
+      <main className="py-12">
+        <Container>
+          <ErrorState
+            title="Course unavailable"
+            description={
+              error ||
+              "The requested course could not be found."
+            }
+            action={
+              <div className="flex flex-wrap justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => void loadCourse()}
+                  className="btn btn-outline"
+                >
+                  Retry
+                </button>
+
+                <Link to="/courses" className="btn btn-primary">
+                  Browse Courses
+                </Link>
+              </div>
+            }
+          />
+        </Container>
+      </main>
+    );
+  }
+
+  const instructorName =
+    course.instructorName?.trim() || "CourseHub Instructor";
+
+  const learningOutcomes = course.learningOutcomes ?? [];
+  const requirements = course.requirements ?? [];
+  const additionalImages = course.additionalImages ?? [];
+
+  return (
+    <main>
+      <section className="bg-primary py-10 text-primary-content sm:py-12 lg:py-14">
+        <Container>
+          <Link
+            to="/courses"
+            className="text-sm text-primary-content/65 transition-colors hover:text-primary-content"
+          >
+            ← Back to courses
+          </Link>
+
+          <div className="mt-6 grid items-center gap-8 lg:grid-cols-[1.05fr_.95fr]">
+            <div>
+              <div className="flex flex-wrap gap-2">
+                <span className="badge badge-secondary">
+                  {course.category}
+                </span>
+
+                <span className="badge border-primary-content/30 bg-transparent text-primary-content">
+                  {course.level}
+                </span>
+              </div>
+
+              <h1 className="mt-5 text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl">
+                {course.title}
+              </h1>
+
+              <p className="mt-4 max-w-2xl text-base leading-relaxed text-primary-content/75 sm:text-lg">
+                {course.shortDescription}
+              </p>
+
+              <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-primary-content/70">
+                <span className="font-semibold text-secondary">
+                  ★ {course.rating || "Not rated"}
+                </span>
+
+                <span>
+                  {reviews.length}{" "}
+                  {reviews.length === 1 ? "review" : "reviews"}
+                </span>
+
+                <span>{course.duration}</span>
+
+                <span>
+                  {course.totalStudents ?? 0} learners
+                </span>
+              </div>
+
+              <div className="mt-5 flex items-center gap-3">
+                <div className="flex size-10 items-center justify-center rounded-full bg-secondary font-bold text-primary">
+                  {instructorName.charAt(0).toUpperCase()}
+                </div>
+
+                <div>
+                  <p className="text-xs text-primary-content/60">
+                    Instructor
+                  </p>
+
+                  <p className="font-semibold text-primary-content">
+                    {instructorName}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <img
+              src={course.image || fallbackImage}
+              onError={(event) => {
+                event.currentTarget.onerror = null;
+                event.currentTarget.src = fallbackImage;
+              }}
+              alt={course.title}
+              className="aspect-video w-full rounded-2xl object-cover shadow-lg"
+            />
+          </div>
+        </Container>
+      </section>
+
+      <section className="py-10 sm:py-12 lg:py-16">
+        <Container>
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] xl:grid-cols-[minmax(0,1fr)_360px]">
+            <div className="min-w-0 space-y-6">
+              <article className="rounded-2xl border border-base-300 bg-base-100 p-6 shadow-sm sm:p-8">
+                <h2 className="text-2xl font-bold">
+                  Course overview
+                </h2>
+
+                <p className="mt-4 whitespace-pre-line leading-relaxed text-base-content/70">
+                  {course.fullDescription}
+                </p>
+              </article>
+
+              <div className="grid gap-6 md:grid-cols-2">
+                <article className="rounded-2xl border border-base-300 bg-base-100 p-6 shadow-sm">
+                  <h2 className="text-xl font-semibold">
+                    What you will learn
+                  </h2>
+
+                  {learningOutcomes.length > 0 ? (
+                    <ul className="mt-5 space-y-3">
+                      {learningOutcomes.map((item) => (
+                        <li
+                          key={item}
+                          className="flex gap-3 text-sm leading-relaxed text-base-content/70"
+                        >
+                          <span
+                            className="font-bold text-primary"
+                            aria-hidden="true"
+                          >
+                            ✓
+                          </span>
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="mt-4 text-sm text-base-content/55">
+                      No learning outcomes provided.
+                    </p>
+                  )}
+                </article>
+
+                <article className="rounded-2xl border border-base-300 bg-base-100 p-6 shadow-sm">
+                  <h2 className="text-xl font-semibold">
+                    Requirements
+                  </h2>
+
+                  {requirements.length > 0 ? (
+                    <ul className="mt-5 space-y-3">
+                      {requirements.map((item) => (
+                        <li
+                          key={item}
+                          className="flex gap-3 text-sm leading-relaxed text-base-content/70"
+                        >
+                          <span
+                            className="font-bold text-neutral"
+                            aria-hidden="true"
+                          >
+                            •
+                          </span>
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="mt-4 text-sm text-base-content/55">
+                      No requirements provided.
+                    </p>
+                  )}
+                </article>
+              </div>
+
+              {additionalImages.length > 0 && (
+                <article className="rounded-2xl border border-base-300 bg-base-100 p-6 shadow-sm sm:p-8">
+                  <h2 className="text-2xl font-bold">
+                    Course gallery
+                  </h2>
+
+                  <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                    {additionalImages.map((image, index) => (
+                      <img
+                        key={`${image}-${index}`}
+                        src={image}
+                        onError={(event) => {
+                          event.currentTarget.onerror = null;
+                          event.currentTarget.src = fallbackImage;
+                        }}
+                        alt={`${course.title} preview ${index + 1}`}
+                        className="aspect-video w-full rounded-xl object-cover"
+                      />
+                    ))}
+                  </div>
+                </article>
+              )}
+
+              <article className="rounded-2xl border border-base-300 bg-base-100 p-6 shadow-sm sm:p-8">
+                <div className="flex flex-wrap items-end justify-between gap-3">
+                  <div>
+                    <h2 className="text-2xl font-bold">Reviews</h2>
+
+                    <p className="mt-1 text-sm text-base-content/55">
+                      Feedback from CourseHub learners.
+                    </p>
+                  </div>
+
+                  <span className="font-semibold text-neutral">
+                    ★ {course.rating || "New"}
+                  </span>
+                </div>
+
+                {reviews.length > 0 ? (
+                  <div className="mt-6 space-y-4">
+                    {reviews.map((review) => (
+                      <article
+                        key={review._id}
+                        className="rounded-xl bg-base-200/70 p-5"
+                      >
+                        <div className="flex items-center gap-3">
+                          {review.userImage ? (
+                            <img
+                              src={review.userImage}
+                              alt={`${review.userName}'s profile`}
+                              className="size-10 rounded-full object-cover"
+                            />
+                          ) : (
+                            <span
+                              className="flex size-10 items-center justify-center rounded-full bg-primary font-semibold text-primary-content"
+                              aria-hidden="true"
+                            >
+                              {review.userName
+                                .charAt(0)
+                                .toUpperCase()}
+                            </span>
+                          )}
+
+                          <div className="min-w-0">
+                            <h3 className="truncate font-semibold">
+                              {review.userName}
+                            </h3>
+
+                            <time
+                              className="text-xs text-base-content/50"
+                              dateTime={review.createdAt}
+                            >
+                              {new Date(
+                                review.createdAt,
+                              ).toLocaleDateString()}
+                            </time>
+                          </div>
+
+                          <span className="ml-auto text-sm font-semibold text-neutral">
+                            ★ {review.rating}
+                          </span>
+                        </div>
+
+                        <p className="mt-4 text-sm leading-relaxed text-base-content/70">
+                          {review.comment}
+                        </p>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="mt-6">
+                    <EmptyState
+                      title="No reviews yet"
+                      description="Be the first learner to share an experience."
+                      compact
+                    />
+                  </div>
+                )}
+
+                {user ? (
+                  <form
+                    onSubmit={submitReview}
+                    className="mt-8 space-y-4 border-t border-base-300 pt-6"
+                  >
+                    <h3 className="text-xl font-semibold">
+                      Write a review
+                    </h3>
+
+                    {reviewError && (
+                      <div
+                        className="alert alert-error"
+                        role="alert"
+                      >
+                        <span>{reviewError}</span>
+                      </div>
+                    )}
+
+                    {reviewSuccess && (
+                      <div
+                        className="alert alert-success"
+                        role="status"
+                      >
+                        <span>{reviewSuccess}</span>
+                      </div>
+                    )}
+
+                    <FormField label="Rating" required>
+                      <select
+                        value={rating}
+                        onChange={(event) =>
+                          setRating(Number(event.target.value))
+                        }
+                        className="select select-bordered w-full sm:max-w-xs"
+                      >
+                        {[5, 4, 3, 2, 1].map((value) => (
+                          <option key={value} value={value}>
+                            {value} stars
+                          </option>
+                        ))}
+                      </select>
+                    </FormField>
+
+                    <FormField label="Your review" required>
+                      <textarea
+                        value={comment}
+                        onChange={(event) =>
+                          setComment(event.target.value)
+                        }
+                        className="textarea textarea-bordered min-h-28 w-full"
+                        required
+                        minLength={3}
+                      />
+                    </FormField>
+
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="btn btn-primary min-w-40"
+                    >
+                      {submitting && (
+                        <span className="loading loading-spinner loading-sm" />
+                      )}
+                      {submitting
+                        ? "Submitting..."
+                        : "Submit Review"}
+                    </button>
+                  </form>
+                ) : (
+                  <div className="mt-8 border-t border-base-300 pt-6">
+                    <p className="text-sm text-base-content/65">
+                      <Link
+                        to="/login"
+                        state={{
+                          from: `/courses/${courseId}`,
+                        }}
+                        className="font-semibold text-primary hover:underline"
+                      >
+                        Log in
+                      </Link>{" "}
+                      to share your experience.
+                    </p>
+                  </div>
+                )}
+              </article>
+            </div>
+
+            <aside className="h-fit rounded-2xl border border-base-300 bg-base-100 p-6 shadow-sm lg:sticky lg:top-24">
+              <p className="text-sm text-base-content/55">
+                Course price
+              </p>
+
+              <p className="mt-1 text-4xl font-bold tracking-tight text-primary">
+                ৳{course.price.toLocaleString()}
+              </p>
+
+              <dl className="mt-6 space-y-4 border-y border-base-300 py-5 text-sm">
+                <div className="flex justify-between gap-4">
+                  <dt className="text-base-content/55">
+                    Instructor
+                  </dt>
+                  <dd className="max-w-40 text-right font-semibold">
+                    {instructorName}
+                  </dd>
+                </div>
+
+                <div className="flex justify-between gap-4">
+                  <dt className="text-base-content/55">Level</dt>
+                  <dd className="font-semibold">{course.level}</dd>
+                </div>
+
+                <div className="flex justify-between gap-4">
+                  <dt className="text-base-content/55">
+                    Duration
+                  </dt>
+                  <dd className="font-semibold">
+                    {course.duration}
+                  </dd>
+                </div>
+
+                <div className="flex justify-between gap-4">
+                  <dt className="text-base-content/55">
+                    Category
+                  </dt>
+                  <dd className="max-w-40 text-right font-semibold">
+                    {course.category}
+                  </dd>
+                </div>
+              </dl>
+
+              <Link
+                to="/courses"
+                className="btn btn-primary mt-6 w-full"
+              >
+                Explore More Courses
+              </Link>
+            </aside>
+          </div>
+        </Container>
+      </section>
+
+      {relatedCourses.length > 0 && (
+        <section className="border-t border-base-300 bg-base-100 py-10 sm:py-12 lg:py-16">
+          <Container>
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-neutral">
+                  Keep exploring
+                </p>
+
+                <h2 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
+                  Related courses
+                </h2>
+              </div>
+
+              <Link
+                to={`/courses?category=${encodeURIComponent(
+                  course.category,
+                )}`}
+                className="btn btn-outline"
+              >
+                View Category
+              </Link>
+            </div>
+
+            <div className="mt-7 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {relatedCourses.map((item) => (
+                <CourseCard key={item._id} course={item} />
+              ))}
+            </div>
+          </Container>
+        </section>
+      )}
+    </main>
+  );
 };
+
 export default CourseDetails;
