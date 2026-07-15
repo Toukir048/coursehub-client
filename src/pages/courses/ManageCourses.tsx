@@ -6,24 +6,32 @@ import { useAuth } from "../../contexts/AuthContext";
 interface ManagedCourse {
   _id: string;
   title: string;
+  shortDescription?: string;
+  fullDescription?: string;
   category: string;
   price: number;
   duration: string;
   image?: string;
+  instructorName?: string;
   createdBy: string;
+  createdAt?: string;
 }
 
 const ManageCourses = () => {
   const { user } = useAuth();
 
   const getCourses = (): ManagedCourse[] => {
-    const savedCourses = JSON.parse(
-      localStorage.getItem("coursehub-added-courses") ?? "[]",
-    ) as ManagedCourse[];
+    try {
+      const savedCourses = JSON.parse(
+        localStorage.getItem("coursehub-added-courses") ?? "[]",
+      ) as ManagedCourse[];
 
-    return savedCourses.filter(
-      (course) => course.createdBy === user?._id,
-    );
+      return savedCourses.filter(
+        (course) => course.createdBy === user?._id,
+      );
+    } catch {
+      return [];
+    }
   };
 
   const [managedCourses, setManagedCourses] =
@@ -38,24 +46,28 @@ const ManageCourses = () => {
       return;
     }
 
-    const allCourses = JSON.parse(
-      localStorage.getItem("coursehub-added-courses") ?? "[]",
-    ) as ManagedCourse[];
+    try {
+      const allCourses = JSON.parse(
+        localStorage.getItem("coursehub-added-courses") ?? "[]",
+      ) as ManagedCourse[];
 
-    const updatedCourses = allCourses.filter(
-      (course) => course._id !== courseId,
-    );
+      const updatedCourses = allCourses.filter(
+        (course) => course._id !== courseId,
+      );
 
-    localStorage.setItem(
-      "coursehub-added-courses",
-      JSON.stringify(updatedCourses),
-    );
+      localStorage.setItem(
+        "coursehub-added-courses",
+        JSON.stringify(updatedCourses),
+      );
 
-    setManagedCourses(
-      updatedCourses.filter(
-        (course) => course.createdBy === user?._id,
-      ),
-    );
+      setManagedCourses(
+        updatedCourses.filter(
+          (course) => course.createdBy === user?._id,
+        ),
+      );
+    } catch {
+      setManagedCourses([]);
+    }
   };
 
   return (
@@ -63,7 +75,7 @@ const ManageCourses = () => {
       <Container>
         <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
           <div>
-            <span className="badge bg-accent text-accent-content">
+            <span className="badge border-0 bg-accent text-accent-content">
               Protected page
             </span>
 
@@ -97,7 +109,7 @@ const ManageCourses = () => {
           </div>
         ) : (
           <div className="mt-10 overflow-x-auto rounded-2xl border border-primary/10 bg-base-100 shadow-sm">
-            <table className="table">
+            <table className="table min-w-[760px]">
               <thead className="bg-primary text-primary-content">
                 <tr>
                   <th>Course</th>
@@ -114,17 +126,22 @@ const ManageCourses = () => {
                     <td>
                       <div className="flex items-center gap-3">
                         <div className="avatar">
-                          <div className="size-12 rounded-lg bg-base-300">
-                            {course.image && (
+                          <div className="size-12 overflow-hidden rounded-lg bg-base-300">
+                            {course.image ? (
                               <img
                                 src={course.image}
                                 alt={course.title}
+                                className="h-full w-full object-cover"
                               />
+                            ) : (
+                              <div className="flex h-full items-center justify-center font-bold text-primary">
+                                {course.title.charAt(0).toUpperCase()}
+                              </div>
                             )}
                           </div>
                         </div>
 
-                        <span className="font-semibold text-primary">
+                        <span className="max-w-56 truncate font-semibold text-primary">
                           {course.title}
                         </span>
                       </div>
@@ -138,7 +155,7 @@ const ManageCourses = () => {
                       <div className="flex gap-2">
                         <Link
                           to={`/courses/${course._id}`}
-                          className="btn btn-sm btn-outline"
+                          className="btn btn-sm border-neutral bg-transparent text-neutral hover:bg-neutral hover:text-neutral-content"
                         >
                           View
                         </Link>

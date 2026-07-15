@@ -66,10 +66,10 @@ const Footer = () => {
               <p>Barishal, Bangladesh</p>
 
               <a
-                href="mailto:coursehub.platform@gmail.com"
+                href="mailto:anjumtanvir117@gmail.com"
                 className="block hover:text-secondary"
               >
-                coursehub.platform@gmail.com
+                anjumtanvir117@gmail.com
               </a>
 
               <a
