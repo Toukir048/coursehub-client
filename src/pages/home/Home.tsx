@@ -1,17 +1,20 @@
+import type { FormEvent } from "react";
 import { Link } from "react-router";
 import Container from "../../components/shared/Container";
 import SectionTitle from "../../components/shared/SectionTitle";
+import { courses } from "../../data/courses.data";
 import {
   blogPosts,
   categories,
   faqItems,
-  featuredCourses,
   testimonials,
 } from "../../data/home.data";
 
 const Home = () => {
+  const featuredCourses = courses.slice(0, 4);
+
   const handleNewsletterSubmit = (
-    event: React.FormEvent<HTMLFormElement>,
+    event: FormEvent<HTMLFormElement>,
   ) => {
     event.preventDefault();
 
@@ -25,7 +28,7 @@ const Home = () => {
 
   return (
     <main>
-      {/* Hero */}
+      {/* Hero Section */}
       <section className="relative overflow-hidden bg-primary py-20 text-primary-content lg:py-28">
         <Container>
           <div className="grid items-center gap-12 lg:grid-cols-2">
@@ -39,8 +42,9 @@ const Home = () => {
               </h1>
 
               <p className="mt-6 max-w-xl text-lg leading-8 text-primary-content/75">
-                Discover programming, development, design, and database
-                courses created to support academic and professional growth.
+                Discover programming, web development, design, and database
+                courses created to support your academic and professional
+                growth.
               </p>
 
               <div className="mt-8 flex flex-wrap gap-4">
@@ -62,12 +66,18 @@ const Home = () => {
               <div className="mt-10 grid max-w-lg grid-cols-3 gap-4">
                 <div>
                   <p className="text-2xl font-bold text-secondary">40+</p>
-                  <p className="text-sm text-primary-content/60">Courses</p>
+                  <p className="text-sm text-primary-content/60">
+                    Courses
+                  </p>
                 </div>
 
                 <div>
-                  <p className="text-2xl font-bold text-secondary">1,200+</p>
-                  <p className="text-sm text-primary-content/60">Learners</p>
+                  <p className="text-2xl font-bold text-secondary">
+                    1,200+
+                  </p>
+                  <p className="text-sm text-primary-content/60">
+                    Learners
+                  </p>
                 </div>
 
                 <div>
@@ -83,14 +93,14 @@ const Home = () => {
               <img
                 src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80"
                 alt="Students learning together"
-                className="h-[420px] w-full rounded-2xl object-cover"
+                className="h-[320px] w-full rounded-2xl object-cover sm:h-[380px] lg:h-[420px]"
               />
             </div>
           </div>
         </Container>
       </section>
 
-      {/* Categories */}
+      {/* Categories Section */}
       <section className="py-16 lg:py-20">
         <Container>
           <SectionTitle
@@ -102,7 +112,7 @@ const Home = () => {
             {categories.map((category) => (
               <article
                 key={category.title}
-                className="flex h-full flex-col rounded-2xl border border-primary/10 bg-base-100 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                className="flex h-full flex-col rounded-2xl border border-primary/10 bg-base-100 p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md"
               >
                 <div className="flex size-12 items-center justify-center rounded-xl bg-accent text-xl font-bold text-accent-content">
                   {category.title.charAt(0)}
@@ -125,7 +135,7 @@ const Home = () => {
         </Container>
       </section>
 
-      {/* Featured Courses */}
+      {/* Featured Courses Section */}
       <section className="bg-base-100 py-16 lg:py-20">
         <Container>
           <SectionTitle
@@ -133,11 +143,11 @@ const Home = () => {
             description="Explore popular courses designed around practical and career-focused skills."
           />
 
-          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {featuredCourses.map((course) => (
               <article
-                key={course.id}
-                className="flex h-full flex-col overflow-hidden rounded-2xl border border-primary/10 bg-base-100 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                key={course._id}
+                className="flex h-full flex-col overflow-hidden rounded-2xl border border-primary/10 bg-base-100 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
               >
                 <img
                   src={course.image}
@@ -146,11 +156,17 @@ const Home = () => {
                 />
 
                 <div className="flex flex-1 flex-col p-5">
-                  <span className="w-fit rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-content">
-                    {course.category}
-                  </span>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-content">
+                      {course.category}
+                    </span>
 
-                  <h3 className="mt-4 text-xl font-bold text-primary">
+                    <span className="text-sm font-medium text-primary/70">
+                      ★ {course.rating}
+                    </span>
+                  </div>
+
+                  <h3 className="mt-4 line-clamp-2 text-xl font-bold text-primary">
                     {course.title}
                   </h3>
 
@@ -158,22 +174,24 @@ const Home = () => {
                     {course.shortDescription}
                   </p>
 
-                  <div className="mt-5 flex items-center justify-between text-sm">
-                    <span className="font-semibold text-neutral">
-                      ৳{course.price}
-                    </span>
+                  <div className="mt-5 grid grid-cols-2 gap-3 border-t border-primary/10 pt-4 text-sm">
+                    <div>
+                      <p className="text-primary/50">Price</p>
+                      <p className="font-bold text-neutral">
+                        ৳{course.price}
+                      </p>
+                    </div>
 
-                    <span className="text-primary/70">
-                      ★ {course.rating}
-                    </span>
-                  </div>
-
-                  <div className="mt-2 text-sm text-primary/60">
-                    Duration: {course.duration}
+                    <div>
+                      <p className="text-primary/50">Duration</p>
+                      <p className="font-semibold text-primary">
+                        {course.duration}
+                      </p>
+                    </div>
                   </div>
 
                   <Link
-                    to={`/courses/${course.id}`}
+                    to={`/courses/${course._id}`}
                     className="btn btn-primary mt-5 w-full"
                   >
                     View Details
@@ -194,7 +212,7 @@ const Home = () => {
         </Container>
       </section>
 
-      {/* Benefits */}
+      {/* Benefits Section */}
       <section className="py-16 lg:py-20">
         <Container>
           <SectionTitle
@@ -207,7 +225,7 @@ const Home = () => {
               {
                 title: "Practical Learning",
                 description:
-                  "Courses focus on skills that can be applied in academic projects and real applications.",
+                  "Courses focus on skills that can be applied in academic projects and real-world applications.",
               },
               {
                 title: "Easy Course Discovery",
@@ -228,7 +246,9 @@ const Home = () => {
                   0{index + 1}
                 </span>
 
-                <h3 className="mt-5 text-xl font-bold">{benefit.title}</h3>
+                <h3 className="mt-5 text-xl font-bold">
+                  {benefit.title}
+                </h3>
 
                 <p className="mt-3 leading-7 text-primary-content/70">
                   {benefit.description}
@@ -239,27 +259,94 @@ const Home = () => {
         </Container>
       </section>
 
-      {/* Statistics */}
+      {/* Statistics Section */}
       <section className="bg-secondary py-16">
         <Container>
           <div className="grid gap-8 text-center sm:grid-cols-2 lg:grid-cols-4">
             {[
-              ["40+", "Published Courses"],
-              ["1,200+", "Registered Learners"],
-              ["15+", "Course Categories"],
-              ["4.8/5", "Average Rating"],
-            ].map(([value, label]) => (
-              <div key={label}>
-                <p className="text-4xl font-bold text-primary">{value}</p>
-                <p className="mt-2 text-primary/70">{label}</p>
+              {
+                value: "40+",
+                label: "Published Courses",
+              },
+              {
+                value: "1,200+",
+                label: "Registered Learners",
+              },
+              {
+                value: "15+",
+                label: "Course Categories",
+              },
+              {
+                value: "4.8/5",
+                label: "Average Rating",
+              },
+            ].map((statistic) => (
+              <div key={statistic.label}>
+                <p className="text-4xl font-bold text-primary">
+                  {statistic.value}
+                </p>
+
+                <p className="mt-2 text-primary/70">
+                  {statistic.label}
+                </p>
               </div>
             ))}
           </div>
         </Container>
       </section>
 
-      {/* Testimonials */}
+      {/* How It Works Section */}
       <section className="py-16 lg:py-20">
+        <Container>
+          <SectionTitle
+            title="How CourseHub Works"
+            description="Find and manage useful courses through a simple learning process."
+          />
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {[
+              {
+                number: "01",
+                title: "Explore Courses",
+                description:
+                  "Browse available courses and use filters to find the right learning option.",
+              },
+              {
+                number: "02",
+                title: "View Details",
+                description:
+                  "Read the overview, requirements, ratings, and related information before choosing.",
+              },
+              {
+                number: "03",
+                title: "Create and Manage",
+                description:
+                  "Registered users can add their own courses and manage their published content.",
+              },
+            ].map((step) => (
+              <article
+                key={step.number}
+                className="rounded-2xl border border-primary/10 bg-base-100 p-7 shadow-sm"
+              >
+                <span className="text-4xl font-bold text-neutral">
+                  {step.number}
+                </span>
+
+                <h3 className="mt-5 text-xl font-bold text-primary">
+                  {step.title}
+                </h3>
+
+                <p className="mt-3 leading-7 text-primary/70">
+                  {step.description}
+                </p>
+              </article>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="bg-base-100 py-16 lg:py-20">
         <Container>
           <SectionTitle
             title="Learner Experiences"
@@ -272,8 +359,10 @@ const Home = () => {
                 key={testimonial.name}
                 className="flex h-full flex-col rounded-2xl border border-primary/10 bg-base-100 p-7 shadow-sm"
               >
-                <p className="flex-1 leading-7 text-primary/75">
-                  “{testimonial.message}”
+                <div className="text-3xl text-neutral">“</div>
+
+                <p className="mt-3 flex-1 leading-7 text-primary/75">
+                  {testimonial.message}
                 </p>
 
                 <div className="mt-6 border-t border-primary/10 pt-5">
@@ -281,7 +370,9 @@ const Home = () => {
                     {testimonial.name}
                   </h3>
 
-                  <p className="text-sm text-neutral">{testimonial.role}</p>
+                  <p className="text-sm text-neutral">
+                    {testimonial.role}
+                  </p>
                 </div>
               </article>
             ))}
@@ -289,8 +380,8 @@ const Home = () => {
         </Container>
       </section>
 
-      {/* Blogs */}
-      <section className="bg-base-100 py-16 lg:py-20">
+      {/* Blogs Section */}
+      <section className="py-16 lg:py-20">
         <Container>
           <SectionTitle
             title="Latest Learning Articles"
@@ -301,9 +392,9 @@ const Home = () => {
             {blogPosts.map((post) => (
               <article
                 key={post.id}
-                className="flex h-full flex-col rounded-2xl border border-primary/10 bg-base-100 p-7 shadow-sm"
+                className="flex h-full flex-col rounded-2xl border border-primary/10 bg-base-100 p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md"
               >
-                <div className="flex items-center justify-between text-sm text-primary/60">
+                <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-primary/60">
                   <span>{post.date}</span>
                   <span>{post.readTime}</span>
                 </div>
@@ -328,8 +419,8 @@ const Home = () => {
         </Container>
       </section>
 
-      {/* FAQ */}
-      <section className="py-16 lg:py-20">
+      {/* FAQ Section */}
+      <section className="bg-base-100 py-16 lg:py-20">
         <Container>
           <SectionTitle
             title="Frequently Asked Questions"
@@ -340,7 +431,7 @@ const Home = () => {
             {faqItems.map((item, index) => (
               <div
                 key={item.question}
-                className="collapse-arrow collapse border border-primary/10 bg-base-100"
+                className="collapse-arrow collapse border border-primary/10 bg-base-100 shadow-sm"
               >
                 <input
                   type="radio"
@@ -361,7 +452,7 @@ const Home = () => {
         </Container>
       </section>
 
-      {/* Newsletter */}
+      {/* Newsletter Section */}
       <section className="bg-accent py-16">
         <Container>
           <div className="mx-auto max-w-3xl text-center">
@@ -386,7 +477,10 @@ const Home = () => {
                 className="input input-bordered w-full bg-base-100"
               />
 
-              <button type="submit" className="btn btn-primary sm:px-8">
+              <button
+                type="submit"
+                className="btn btn-primary sm:px-8"
+              >
                 Subscribe
               </button>
             </form>
@@ -394,7 +488,7 @@ const Home = () => {
         </Container>
       </section>
 
-      {/* CTA */}
+      {/* Final CTA Section */}
       <section className="bg-primary py-16 text-primary-content">
         <Container>
           <div className="flex flex-col items-center justify-between gap-8 text-center lg:flex-row lg:text-left">
