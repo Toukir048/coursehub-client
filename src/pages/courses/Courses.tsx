@@ -16,7 +16,9 @@ const Courses = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
 
-  const categories = [...new Set(courses.map((course) => course.category))];
+  const categories = [
+    ...new Set(courses.map((course) => course.category)),
+  ];
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -26,9 +28,30 @@ const Courses = () => {
     return () => window.clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
     setCurrentPage(1);
-  }, [search, category, maxPrice, minimumRating, sort]);
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setCategory(value);
+    setCurrentPage(1);
+  };
+
+  const handleMaxPriceChange = (value: string) => {
+    setMaxPrice(value);
+    setCurrentPage(1);
+  };
+
+  const handleRatingChange = (value: string) => {
+    setMinimumRating(value);
+    setCurrentPage(1);
+  };
+
+  const handleSortChange = (value: string) => {
+    setSort(value);
+    setCurrentPage(1);
+  };
 
   const filteredCourses = useMemo(() => {
     const result = courses.filter((course) => {
@@ -74,11 +97,18 @@ const Courses = () => {
     });
   }, [search, category, maxPrice, minimumRating, sort]);
 
-  const totalPages = Math.ceil(filteredCourses.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(
+    filteredCourses.length / ITEMS_PER_PAGE,
+  );
+
+  const safeCurrentPage = Math.min(
+    currentPage,
+    Math.max(totalPages, 1),
+  );
 
   const paginatedCourses = filteredCourses.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE,
+    (safeCurrentPage - 1) * ITEMS_PER_PAGE,
+    safeCurrentPage * ITEMS_PER_PAGE,
   );
 
   const resetFilters = () => {
@@ -87,6 +117,7 @@ const Courses = () => {
     setMaxPrice("all");
     setMinimumRating("all");
     setSort("newest");
+    setCurrentPage(1);
   };
 
   return (
@@ -107,7 +138,9 @@ const Courses = () => {
               <input
                 type="search"
                 value={search}
-                onChange={(event) => setSearch(event.target.value)}
+                onChange={(event) =>
+                  handleSearchChange(event.target.value)
+                }
                 placeholder="Search by course title"
                 className="input input-bordered w-full"
               />
@@ -120,13 +153,18 @@ const Courses = () => {
 
               <select
                 value={category}
-                onChange={(event) => setCategory(event.target.value)}
+                onChange={(event) =>
+                  handleCategoryChange(event.target.value)
+                }
                 className="select select-bordered w-full"
               >
                 <option value="all">All categories</option>
 
                 {categories.map((courseCategory) => (
-                  <option key={courseCategory} value={courseCategory}>
+                  <option
+                    key={courseCategory}
+                    value={courseCategory}
+                  >
                     {courseCategory}
                   </option>
                 ))}
@@ -140,7 +178,9 @@ const Courses = () => {
 
               <select
                 value={maxPrice}
-                onChange={(event) => setMaxPrice(event.target.value)}
+                onChange={(event) =>
+                  handleMaxPriceChange(event.target.value)
+                }
                 className="select select-bordered w-full"
               >
                 <option value="all">Any price</option>
@@ -159,7 +199,7 @@ const Courses = () => {
               <select
                 value={minimumRating}
                 onChange={(event) =>
-                  setMinimumRating(event.target.value)
+                  handleRatingChange(event.target.value)
                 }
                 className="select select-bordered w-full"
               >
@@ -179,12 +219,18 @@ const Courses = () => {
 
               <select
                 value={sort}
-                onChange={(event) => setSort(event.target.value)}
+                onChange={(event) =>
+                  handleSortChange(event.target.value)
+                }
                 className="select select-bordered w-full"
               >
                 <option value="newest">Newest first</option>
-                <option value="price-low">Price: low to high</option>
-                <option value="price-high">Price: high to low</option>
+                <option value="price-low">
+                  Price: low to high
+                </option>
+                <option value="price-high">
+                  Price: high to low
+                </option>
                 <option value="rating">Highest rated</option>
               </select>
             </label>
@@ -207,7 +253,7 @@ const Courses = () => {
 
           {totalPages > 0 && (
             <p className="text-sm text-primary/60">
-              Page {currentPage} of {totalPages}
+              Page {safeCurrentPage} of {totalPages}
             </p>
           )}
         </div>
@@ -249,37 +295,43 @@ const Courses = () => {
             <div className="join">
               <button
                 type="button"
-                disabled={currentPage === 1}
+                disabled={safeCurrentPage === 1}
                 onClick={() =>
-                  setCurrentPage((page) => Math.max(page - 1, 1))
+                  setCurrentPage((page) =>
+                    Math.max(page - 1, 1),
+                  )
                 }
                 className="join-item btn"
               >
                 Previous
               </button>
 
-              {Array.from({ length: totalPages }).map((_, index) => {
-                const pageNumber = index + 1;
+              {Array.from({ length: totalPages }).map(
+                (_, index) => {
+                  const pageNumber = index + 1;
 
-                return (
-                  <button
-                    key={pageNumber}
-                    type="button"
-                    onClick={() => setCurrentPage(pageNumber)}
-                    className={`join-item btn ${
-                      currentPage === pageNumber
-                        ? "btn-primary"
-                        : ""
-                    }`}
-                  >
-                    {pageNumber}
-                  </button>
-                );
-              })}
+                  return (
+                    <button
+                      key={pageNumber}
+                      type="button"
+                      onClick={() =>
+                        setCurrentPage(pageNumber)
+                      }
+                      className={`join-item btn ${
+                        safeCurrentPage === pageNumber
+                          ? "btn-primary"
+                          : ""
+                      }`}
+                    >
+                      {pageNumber}
+                    </button>
+                  );
+                },
+              )}
 
               <button
                 type="button"
-                disabled={currentPage === totalPages}
+                disabled={safeCurrentPage === totalPages}
                 onClick={() =>
                   setCurrentPage((page) =>
                     Math.min(page + 1, totalPages),

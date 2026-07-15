@@ -14,7 +14,7 @@ import {
   YAxis,
 } from "recharts";
 import Container from "../../components/shared/Container";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../hooks/useAuth";
 import { courses } from "../../data/courses.data";
 
 interface AddedCourse {

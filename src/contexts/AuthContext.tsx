@@ -1,33 +1,10 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+import { useState, type ReactNode } from "react";
 import type { User } from "../types/user.types";
-
-interface LoginData {
-  email: string;
-  password: string;
-}
-
-interface RegisterData {
-  name: string;
-  email: string;
-  password: string;
-}
-
-interface AuthContextType {
-  user: User | null;
-  isLoading: boolean;
-  login: (data: LoginData) => boolean;
-  register: (data: RegisterData) => boolean;
-  demoLogin: () => void;
-  logout: () => void;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import {
+  AuthContext,
+  type LoginData,
+  type RegisterData,
+} from "./auth.context";
 
 const DEMO_USER: User = {
   _id: "demo-user-1",
@@ -38,33 +15,38 @@ const DEMO_USER: User = {
   createdAt: new Date().toISOString(),
 };
 
+const getSavedUser = (): User | null => {
+  try {
+    const savedUser = localStorage.getItem("coursehub-user");
+
+    if (!savedUser) {
+      return null;
+    }
+
+    return JSON.parse(savedUser) as User;
+  } catch {
+    localStorage.removeItem("coursehub-user");
+    return null;
+  }
+};
+
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const savedUser = localStorage.getItem("coursehub-user");
-
-    if (savedUser) {
-      setUser(JSON.parse(savedUser) as User);
-    }
-
-    setIsLoading(false);
-  }, []);
+const AuthProvider = ({ children }: AuthProviderProps) => {
+  const [user, setUser] = useState<User | null>(getSavedUser);
 
   const saveUser = (loggedInUser: User) => {
     setUser(loggedInUser);
+
     localStorage.setItem(
       "coursehub-user",
       JSON.stringify(loggedInUser),
     );
   };
 
-  const login = ({ email, password }: LoginData) => {
+  const login = ({ email, password }: LoginData): boolean => {
     if (
       email === "user@coursehub.com" &&
       password === "User123"
@@ -76,7 +58,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return false;
   };
 
-  const register = ({ name, email }: RegisterData) => {
+  const register = ({
+    name,
+    email,
+  }: RegisterData): boolean => {
     const newUser: User = {
       _id: crypto.randomUUID(),
       name,
@@ -103,7 +88,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     <AuthContext.Provider
       value={{
         user,
-        isLoading,
+        isLoading: false,
         login,
         register,
         demoLogin,
@@ -115,12 +100,4 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   );
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-
-  if (!context) {
-    throw new Error("useAuth must be used inside AuthProvider");
-  }
-
-  return context;
-};
+export default AuthProvider;
