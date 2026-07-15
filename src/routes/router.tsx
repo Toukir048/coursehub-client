@@ -11,6 +11,9 @@ import Home from "../pages/home/Home";
 import CourseDetails from "../pages/courses/CourseDetails";
 import Privacy from "../pages/Privacy";
 import Terms from "../pages/Terms";
+import AddCourse from "../pages/courses/AddCourse";
+import ManageCourses from "../pages/courses/ManageCourses";
+import PrivateRoute from "./PrivateRoute";
 
 export const router = createBrowserRouter([
   {
@@ -56,6 +59,22 @@ export const router = createBrowserRouter([
       {
         path: "terms",
         Component: Terms,
+      },
+      {
+        path: "items/add",
+        element: (
+          <PrivateRoute>
+            <AddCourse />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "items/manage",
+        element: (
+          <PrivateRoute>
+            <ManageCourses />
+          </PrivateRoute>
+        ),
       },
     ],
   },
